@@ -120,17 +120,17 @@
                             <x-ui.input label="Harga jual" name="sale_price" type="number" step="0.01" min="0" :value="$product->sale_price" :use-old="false" required />
                         </div>
 
-                    <div>
-                        <x-ui.input label="Minimum stok" name="minimum_stock" type="number" min="0" :value="$product->minimum_stock" :use-old="false" required />
-                    </div>
+                        <div>
+                            <x-ui.input label="Minimum stok" name="minimum_stock" type="number" min="0" :value="$product->minimum_stock" :use-old="false" required />
+                        </div>
 
-                    <div class="rounded-3xl border border-dashed border-slate-200 bg-slate-50 p-4">
-                        <p class="text-xs font-semibold uppercase tracking-[0.22em] text-slate-500">Stok saat ini</p>
-                        <p class="mt-2 text-2xl font-extrabold text-slate-950">{{ $product->stock }} {{ $product->unit }}</p>
-                        <p class="mt-2 text-sm leading-6 text-slate-500">
-                            Perubahan stok harian dilakukan dari menu Mutasi Stok agar histori tetap tercatat.
-                        </p>
-                    </div>
+                        <div class="rounded-3xl border border-dashed border-slate-200 bg-slate-50 p-4">
+                            <p class="text-xs font-semibold uppercase tracking-[0.22em] text-slate-500">Stok saat ini</p>
+                            <p class="mt-2 text-2xl font-extrabold text-slate-950">{{ $product->stock }} {{ $product->unit }}</p>
+                            <p class="mt-2 text-sm leading-6 text-slate-500">
+                                Perubahan stok harian dilakukan dari menu Mutasi Stok agar histori tetap tercatat.
+                            </p>
+                        </div>
 
                         <div class="md:col-span-2">
                             <x-ui.textarea label="Deskripsi" name="description" rows="3" :value="$product->description" :use-old="false"></x-ui.textarea>
@@ -149,6 +149,9 @@
                                 <span class="rounded-full bg-slate-100 px-3 py-2 text-xs font-semibold uppercase tracking-[0.18em] text-slate-600">
                                     Barcode {{ $product->barcode }}
                                 </span>
+                                <a href="{{ route('stock.products.label', $product) }}" target="_blank">
+                                    <x-ui.button type="button" size="sm" variant="ghost">Cetak Label</x-ui.button>
+                                </a>
                             @endif
                             <x-ui.button type="submit" size="sm">Update</x-ui.button>
                         </div>

@@ -1,58 +1,445 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# Kasir Stok App
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+Sistem kasir berbasis **Laravel 13**, **Tailwind CSS 4**, dan **MySQL** untuk kebutuhan toko yang ingin mengelola:
 
-## About Laravel
+- transaksi kasir
+- stok barang
+- barcode produk
+- nota pembelian
+- rekap dana masuk per metode pembayaran
+- laporan harian yang bisa diexport
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+Project ini disiapkan untuk environment lokal **Laragon** dengan database **MySQL**.
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+## Preview
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+### Dashboard Operasional
+![Dashboard Preview](docs/images/preview-dashboard.svg)
 
-## Learning Laravel
+### Halaman Kasir
+![Cashier Preview](docs/images/preview-cashier.svg)
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+### Laporan dan Barcode
+![Report Preview](docs/images/preview-report.svg)
 
-In addition, [Laracasts](https://laracasts.com) contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+## Fitur Utama
 
-You can also watch bite-sized lessons with real-world projects on [Laravel Learn](https://laravel.com/learn), where you will be guided through building a Laravel application from scratch while learning PHP fundamentals.
+- Login dan pemisahan hak akses berdasarkan role:
+  - `admin`
+  - `stok`
+  - `kasir`
+- Dashboard operasional:
+  - total produk
+  - stok menipis
+  - transaksi hari ini
+  - pendapatan hari ini
+  - breakdown dana masuk per metode pembayaran
+- Manajemen kategori produk
+- Manajemen produk:
+  - SKU
+  - barcode
+  - harga modal
+  - harga jual
+  - stok awal
+  - minimum stok
+- Barcode scanner di halaman kasir:
+  - scan barcode
+  - input SKU
+  - produk otomatis masuk ke transaksi
+- Metode pembayaran:
+  - `cash`
+  - `QRIS`
+  - `rekening`
+- Checkout kasir dengan:
+  - diskon
+  - pajak/biaya
+  - uang pas
+  - nominal cepat untuk pembayaran cash
+- Nota pembelian siap print
+- Cetak label barcode produk langsung dari sistem
+- Mutasi stok dan histori stok
+- Riwayat penjualan
+- Laporan penjualan harian:
+  - filter tanggal
+  - filter metode pembayaran
+  - export CSV untuk rekap harian
 
-## Agentic Development
+## Tech Stack
 
-Laravel's predictable structure and conventions make it ideal for AI coding agents like Claude Code, Cursor, and GitHub Copilot. Install [Laravel Boost](https://laravel.com/docs/ai) to supercharge your AI workflow:
+- PHP `8.3+`
+- Laravel `13`
+- Tailwind CSS `4`
+- Vite
+- MySQL
+- Blade Components
 
-```bash
-composer require laravel/boost --dev
+## Struktur Fitur
 
-php artisan boost:install
+### Modul Stok
+
+- Kategori produk
+- Produk dan barcode
+- Mutasi stok
+- Cetak label barcode
+
+### Modul Kasir
+
+- Scan barcode / input SKU
+- Tambah item transaksi
+- Pilih metode pembayaran
+- Nota pembelian
+
+### Modul Laporan
+
+- Riwayat penjualan
+- Rekap harian
+- Export transaksi
+
+## Metode Pembayaran
+
+Sistem saat ini mendukung:
+
+- `Cash`
+- `QRIS`
+- `Rekening`
+
+Catatan:
+
+- Untuk `QRIS` dan `rekening`, nominal dana masuk otomatis mengikuti `grand total`.
+- Untuk `cash`, kasir bisa menggunakan:
+  - checkbox `Uang Pas`
+  - tombol nominal cepat
+
+## Fitur Barcode
+
+Barcode pada sistem dipakai di dua sisi:
+
+1. **Input barang**
+   - setiap produk bisa punya barcode unik
+   - barcode bisa diisi manual atau dari hasil scan
+
+2. **Transaksi kasir**
+   - scanner barcode akan dibaca seperti keyboard
+   - scan produk akan langsung menambah item ke transaksi
+   - jika produk yang sama discan lagi, qty otomatis bertambah
+
+3. **Cetak stiker barcode**
+   - label barcode bisa dicetak langsung dari halaman produk
+   - cocok untuk kebutuhan stiker rak atau kemasan barang
+
+## Alur Sistem
+
+```mermaid
+flowchart LR
+    A["Input Produk"] --> B["Simpan SKU + Barcode"]
+    B --> C["Cetak Label Barcode"]
+    B --> D["Produk Siap Dijual"]
+    D --> E["Scan di Halaman Kasir"]
+    E --> F["Checkout"]
+    F --> G["Metode Bayar: Cash / QRIS / Rekening"]
+    G --> H["Nota Pembelian"]
+    H --> I["Masuk Riwayat Penjualan"]
+    I --> J["Laporan Harian + Export"]
 ```
 
-Boost provides your agent 15+ tools and skills that help agents build Laravel applications while following best practices.
+## Instalasi
 
-## Contributing
+### 1. Clone repository
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+```bash
+git clone https://github.com/username/kasir-stok-app.git
+cd kasir-stok-app
+```
 
-## Code of Conduct
+### 2. Install dependency backend
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+```bash
+composer install
+```
 
-## Security Vulnerabilities
+### 3. Install dependency frontend
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+```bash
+npm install
+```
 
-## License
+### 4. Copy file environment
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+```bash
+copy .env.example .env
+```
+
+Jika menggunakan Git Bash atau terminal Unix-like:
+
+```bash
+cp .env.example .env
+```
+
+### 5. Generate app key
+
+```bash
+php artisan key:generate
+```
+
+## Setup Database MySQL di Laragon
+
+Project ini disiapkan untuk **Laragon**, bukan Herd database.
+
+### 1. Pastikan MySQL Laragon aktif
+
+### 2. Buat database baru
+
+Nama database default:
+
+```text
+kasir_stok_app
+```
+
+Contoh lewat terminal:
+
+```bash
+mysql -u root -e "CREATE DATABASE kasir_stok_app CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;"
+```
+
+### 3. Pastikan konfigurasi `.env`
+
+```env
+DB_CONNECTION=mysql
+DB_HOST=127.0.0.1
+DB_PORT=3306
+DB_DATABASE=kasir_stok_app
+DB_USERNAME=root
+DB_PASSWORD=
+```
+
+## Jalankan Migrasi dan Seeder
+
+```bash
+php artisan migrate --seed
+```
+
+Jika ingin reset total data:
+
+```bash
+php artisan migrate:fresh --seed
+```
+
+## Menjalankan Project
+
+Jalankan backend:
+
+```bash
+php artisan serve
+```
+
+Jalankan frontend:
+
+```bash
+npm run dev
+```
+
+Buka browser:
+
+```text
+http://127.0.0.1:8000
+```
+
+## Akun Demo
+
+Seeder bawaan membuat 3 akun:
+
+### Admin
+
+- Email: `admin@kasirstok.test`
+- Password: `password`
+
+### Petugas Stok
+
+- Email: `stok@kasirstok.test`
+- Password: `password`
+
+### Kasir
+
+- Email: `kasir@kasirstok.test`
+- Password: `password`
+
+## Cara Pakai Singkat
+
+### 1. Login
+
+Masuk menggunakan akun sesuai role.
+
+### 2. Tambah kategori dan produk
+
+Masuk ke menu:
+
+- `Kategori`
+- `Produk`
+
+Isi data:
+
+- kategori
+- SKU
+- barcode
+- harga
+- stok awal
+
+### 3. Cetak label barcode
+
+Di halaman produk, gunakan tombol:
+
+- `Cetak Label`
+
+Lalu pilih jumlah label yang ingin diprint.
+
+### 4. Lakukan transaksi kasir
+
+Masuk ke menu:
+
+- `Kasir`
+
+Transaksi bisa dilakukan dengan:
+
+- pilih produk manual
+- scan barcode
+- input SKU
+
+### 5. Pilih metode pembayaran
+
+Pilihan saat checkout:
+
+- `Cash`
+- `QRIS`
+- `Rekening`
+
+### 6. Cetak nota
+
+Setelah transaksi selesai, sistem akan membuka halaman nota yang bisa langsung dicetak.
+
+### 7. Rekap laporan
+
+Masuk ke menu:
+
+- `Laporan Harian`
+
+Gunakan filter:
+
+- tanggal
+- metode pembayaran
+
+Lalu export hasil rekap harian.
+
+## Export Laporan
+
+Saat ini export laporan harian tersedia dalam format:
+
+- `CSV`
+
+Isi export:
+
+- tanggal laporan
+- filter metode pembayaran
+- rekap jumlah transaksi per metode
+- total dana masuk per metode
+- detail transaksi
+
+File CSV bisa langsung dibuka di:
+
+- Microsoft Excel
+- Google Sheets
+- LibreOffice Calc
+
+## Perintah Penting
+
+### Development
+
+```bash
+php artisan serve
+npm run dev
+```
+
+### Build asset production
+
+```bash
+npm run build
+```
+
+### Testing
+
+```bash
+php artisan test
+```
+
+### Cek route
+
+```bash
+php artisan route:list
+```
+
+### Cache view
+
+```bash
+php artisan view:cache
+```
+
+## Struktur Folder Penting
+
+```text
+app/
+  Enums/
+  Http/Controllers/
+  Models/
+  Services/
+
+database/
+  migrations/
+  seeders/
+
+resources/
+  views/
+    cashier/
+    reports/
+    sales/
+    stock/
+    components/
+
+routes/
+  web.php
+```
+
+## Fitur Print
+
+### Nota Pembelian
+
+- muncul otomatis setelah checkout berhasil
+- bisa dibuka ulang dari riwayat penjualan
+- siap diprint dari browser
+
+### Label Barcode
+
+- dibuka dari halaman produk
+- bisa atur jumlah copy label
+- siap diprint sebagai stiker produk
+
+## Catatan Penggunaan
+
+- Gunakan **Laragon MySQL** untuk database lokal.
+- Scanner barcode umumnya akan bekerja seperti keyboard biasa.
+- Untuk produk tanpa barcode, transaksi tetap bisa memakai SKU.
+- Jika ingin cetak barcode, pastikan field `barcode` pada produk sudah terisi.
+
+## Roadmap Pengembangan
+
+Beberapa fitur yang bisa dilanjutkan:
+
+- export laporan ke `XLSX`
+- printer thermal `58mm` / `80mm`
+- supplier dan pembelian stok
+- multi outlet
+- manajemen pelanggan
+- closing kas harian
+
+## Lisensi
+
+Project ini menggunakan lisensi **MIT**.
+
