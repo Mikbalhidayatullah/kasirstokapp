@@ -73,6 +73,13 @@
                     <p class="mt-2 font-semibold text-slate-950">{{ $sale->cashier->name }}</p>
                 </div>
                 <div>
+                    <p class="text-xs uppercase tracking-[0.22em] text-slate-500">Member</p>
+                    <p class="mt-2 font-semibold text-slate-950">{{ $sale->member?->name ?? 'Pelanggan umum' }}</p>
+                    @if ($sale->member)
+                        <p class="mt-1 text-sm text-slate-500">Poin +{{ $sale->points_earned }} / -{{ $sale->points_redeemed }}</p>
+                    @endif
+                </div>
+                <div>
                     <p class="text-xs uppercase tracking-[0.22em] text-slate-500">Total Item</p>
                     <p class="mt-2 font-semibold text-slate-950">{{ $sale->total_items }}</p>
                 </div>
@@ -107,6 +114,14 @@
                 <div class="flex items-center justify-between text-sm text-slate-600">
                     <span>Diskon</span>
                     <span>Rp {{ number_format($sale->discount_amount, 0, ',', '.') }}</span>
+                </div>
+                <div class="flex items-center justify-between text-sm text-slate-600">
+                    <span>Promo {{ $sale->promotion?->name ? '('.$sale->promotion->name.')' : '' }}</span>
+                    <span>Rp {{ number_format($sale->promo_discount_amount, 0, ',', '.') }}</span>
+                </div>
+                <div class="flex items-center justify-between text-sm text-slate-600">
+                    <span>Tukar Poin {{ $sale->pointReward?->name ? '('.$sale->pointReward->name.')' : '' }}</span>
+                    <span>Rp {{ number_format($sale->point_discount_amount, 0, ',', '.') }}</span>
                 </div>
                 <div class="flex items-center justify-between text-sm text-slate-600">
                     <span>Pajak / Biaya</span>

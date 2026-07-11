@@ -1,78 +1,86 @@
 <x-layouts.app
     title="Riwayat Penjualan"
     heading="Riwayat Penjualan"
-    description="Lihat transaksi yang sudah selesai, item yang terjual, metode pembayarannya, dan buka nota kapan saja untuk dicetak ulang."
+    description="Lihat transaksi selesai, member, promo, poin, metode pembayaran, dan buka nota kapan saja."
 >
-    <section class="space-y-4">
-        @forelse ($sales as $sale)
-            <article class="surface-card p-5">
-                <div class="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
-                    <div>
-                        <div class="flex flex-wrap items-center gap-3">
-                            <h2 class="text-xl font-extrabold">{{ $sale->invoice_number }}</h2>
-                            <x-ui.badge tone="dark">{{ $sale->total_items }} item</x-ui.badge>
-                            <x-ui.badge :tone="$sale->payment_method->badgeTone()">{{ $sale->payment_method->label() }}</x-ui.badge>
-                        </div>
-                        <p class="mt-2 text-sm text-slate-500">
-                            {{ $sale->cashier->name }} - {{ $sale->sold_at->format('d M Y, H:i') }}
-                        </p>
-                    </div>
-
-                    <div class="flex flex-col gap-3 lg:items-end">
-                        <div class="grid gap-3 text-right sm:grid-cols-3">
-                            <div class="rounded-2xl bg-slate-50 px-4 py-3">
-                                <p class="text-xs uppercase tracking-[0.22em] text-slate-500">Subtotal</p>
-                                <p class="mt-2 font-extrabold text-slate-950">Rp {{ number_format($sale->subtotal, 0, ',', '.') }}</p>
-                            </div>
-                            <div class="rounded-2xl bg-slate-50 px-4 py-3">
-                                <p class="text-xs uppercase tracking-[0.22em] text-slate-500">Grand Total</p>
-                                <p class="mt-2 font-extrabold text-slate-950">Rp {{ number_format($sale->grand_total, 0, ',', '.') }}</p>
-                            </div>
-                            <div class="rounded-2xl bg-emerald-50 px-4 py-3">
-                                <p class="text-xs uppercase tracking-[0.22em] text-emerald-600">Kembalian</p>
-                                <p class="mt-2 font-extrabold text-emerald-700">Rp {{ number_format($sale->change_amount, 0, ',', '.') }}</p>
-                            </div>
-                        </div>
-
-                        <a href="{{ route('sales.receipt', $sale) }}">
-                            <x-ui.button variant="ghost" size="sm">Buka Nota</x-ui.button>
-                        </a>
-                    </div>
-                </div>
-
-                <div class="mt-5 overflow-hidden rounded-3xl border border-slate-100">
-                    <table class="min-w-full divide-y divide-slate-100 text-sm">
-                        <thead class="bg-slate-50">
-                            <tr>
-                                <th class="px-4 py-3 font-semibold text-slate-500">Produk</th>
-                                <th class="px-4 py-3 font-semibold text-slate-500">SKU</th>
-                                <th class="px-4 py-3 font-semibold text-slate-500">Qty</th>
-                                <th class="px-4 py-3 font-semibold text-slate-500">Harga</th>
-                                <th class="px-4 py-3 font-semibold text-slate-500">Subtotal</th>
-                            </tr>
-                        </thead>
-                        <tbody class="divide-y divide-slate-100 bg-white">
-                            @foreach ($sale->items as $item)
-                                <tr>
-                                    <td class="px-4 py-3 font-medium text-slate-900">{{ $item->product_name }}</td>
-                                    <td class="px-4 py-3 text-slate-500">{{ $item->product_sku }}</td>
-                                    <td class="px-4 py-3 text-slate-500">{{ $item->quantity }}</td>
-                                    <td class="px-4 py-3 text-slate-500">Rp {{ number_format($item->price, 0, ',', '.') }}</td>
-                                    <td class="px-4 py-3 font-semibold text-slate-900">Rp {{ number_format($item->subtotal, 0, ',', '.') }}</td>
-                                </tr>
-                            @endforeach
-                        </tbody>
-                    </table>
-                </div>
-            </article>
-        @empty
-            <div class="surface-card border border-dashed border-slate-200 p-8 text-sm text-slate-500">
-                Belum ada riwayat penjualan yang bisa ditampilkan.
+    <section class="surface-card p-5">
+        <div class="flex items-center justify-between gap-4">
+            <div>
+                <h2 class="section-title">Daftar Transaksi</h2>
+                <p class="section-copy mt-1">Format tabel lebih ringkas untuk histori transaksi yang panjang.</p>
             </div>
-        @endforelse
-    </section>
+            <x-ui.badge tone="dark">{{ $sales->total() }} data</x-ui.badge>
+        </div>
 
-    <div>
-        {{ $sales->links() }}
-    </div>
+        <div class="mt-5 overflow-x-auto">
+            <table class="min-w-full divide-y divide-slate-200 text-sm">
+                <thead class="bg-slate-50">
+                    <tr>
+                        <th class="px-4 py-3 font-semibold text-slate-600">Invoice</th>
+                        <th class="px-4 py-3 font-semibold text-slate-600">Tanggal</th>
+                        <th class="px-4 py-3 font-semibold text-slate-600">Member</th>
+                        <th class="px-4 py-3 font-semibold text-slate-600">Item</th>
+                        <th class="px-4 py-3 font-semibold text-slate-600">Promo/Poin</th>
+                        <th class="px-4 py-3 font-semibold text-slate-600">Pembayaran</th>
+                        <th class="px-4 py-3 font-semibold text-slate-600">Total</th>
+                        <th class="px-4 py-3 font-semibold text-slate-600">Aksi</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-slate-100 bg-white">
+                    @forelse ($sales as $sale)
+                        <tr>
+                            <td class="px-4 py-3 align-top">
+                                <p class="font-semibold text-slate-950">{{ $sale->invoice_number }}</p>
+                                <p class="mt-1 text-slate-500">{{ $sale->cashier->name }}</p>
+                            </td>
+                            <td class="px-4 py-3 align-top text-slate-600">{{ $sale->sold_at->format('d M Y, H:i') }}</td>
+                            <td class="px-4 py-3 align-top">
+                                @if ($sale->member)
+                                    <p class="font-semibold text-slate-900">{{ $sale->member->name }}</p>
+                                    <p class="mt-1 text-slate-500">{{ $sale->member->phone_number }}</p>
+                                    <p class="mt-1 text-xs font-semibold text-emerald-700">+{{ $sale->points_earned }} / -{{ $sale->points_redeemed }} poin</p>
+                                @else
+                                    <span class="text-slate-500">Umum</span>
+                                @endif
+                            </td>
+                            <td class="px-4 py-3 align-top">
+                                <p class="font-semibold text-slate-900">{{ $sale->total_items }} item</p>
+                                <p class="mt-1 max-w-xs text-slate-500">
+                                    {{ $sale->items->map(fn ($item) => $item->product_name.' x'.$item->quantity)->join(', ') }}
+                                </p>
+                            </td>
+                            <td class="px-4 py-3 align-top text-slate-600">
+                                <p>{{ $sale->promotion?->name ?? 'Tanpa promo' }}</p>
+                                <p class="mt-1">Promo: Rp {{ number_format($sale->promo_discount_amount, 0, ',', '.') }}</p>
+                                <p>Reward: Rp {{ number_format($sale->point_discount_amount, 0, ',', '.') }}</p>
+                            </td>
+                            <td class="px-4 py-3 align-top">
+                                <x-ui.badge :tone="$sale->payment_method->badgeTone()">{{ $sale->payment_method->label() }}</x-ui.badge>
+                                <p class="mt-2 text-slate-500">Masuk Rp {{ number_format($sale->paid_amount, 0, ',', '.') }}</p>
+                            </td>
+                            <td class="px-4 py-3 align-top">
+                                <p class="font-extrabold text-slate-950">Rp {{ number_format($sale->grand_total, 0, ',', '.') }}</p>
+                                <p class="mt-1 text-slate-500">Kembali Rp {{ number_format($sale->change_amount, 0, ',', '.') }}</p>
+                            </td>
+                            <td class="px-4 py-3 align-top">
+                                <a href="{{ route('sales.receipt', $sale) }}">
+                                    <x-ui.button variant="ghost" size="sm">Nota</x-ui.button>
+                                </a>
+                            </td>
+                        </tr>
+                    @empty
+                        <tr>
+                            <td colspan="8" class="px-4 py-8 text-center text-slate-500">
+                                Belum ada riwayat penjualan yang bisa ditampilkan.
+                            </td>
+                        </tr>
+                    @endforelse
+                </tbody>
+            </table>
+        </div>
+
+        <div class="mt-5">
+            {{ $sales->links() }}
+        </div>
+    </section>
 </x-layouts.app>

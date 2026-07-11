@@ -116,32 +116,50 @@
                 <x-ui.badge tone="dark">{{ $sales->total() }} data</x-ui.badge>
             </div>
 
-            <div class="mt-5 space-y-3">
-                @forelse ($sales as $sale)
-                    <div class="rounded-3xl border border-slate-100 bg-slate-50/70 p-4">
-                        <div class="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
-                            <div>
-                                <div class="flex flex-wrap items-center gap-2">
+            <div class="mt-5 overflow-x-auto">
+                <table class="min-w-full divide-y divide-slate-200 text-sm">
+                    <thead class="bg-slate-50">
+                        <tr>
+                            <th class="px-4 py-3 font-semibold text-slate-600">Invoice</th>
+                            <th class="px-4 py-3 font-semibold text-slate-600">Tanggal</th>
+                            <th class="px-4 py-3 font-semibold text-slate-600">Member</th>
+                            <th class="px-4 py-3 font-semibold text-slate-600">Promo</th>
+                            <th class="px-4 py-3 font-semibold text-slate-600">Item</th>
+                            <th class="px-4 py-3 font-semibold text-slate-600">Metode</th>
+                            <th class="px-4 py-3 font-semibold text-slate-600">Total</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-slate-100 bg-white">
+                        @forelse ($sales as $sale)
+                            <tr>
+                                <td class="px-4 py-3 align-top">
                                     <p class="font-semibold text-slate-900">{{ $sale->invoice_number }}</p>
+                                    <p class="mt-1 text-slate-500">{{ $sale->cashier->name }}</p>
+                                </td>
+                                <td class="px-4 py-3 align-top text-slate-600">{{ $sale->sold_at->format('d M Y, H:i') }}</td>
+                                <td class="px-4 py-3 align-top text-slate-600">{{ $sale->member?->name ?? 'Umum' }}</td>
+                                <td class="px-4 py-3 align-top text-slate-600">
+                                    <p>{{ $sale->promotion?->name ?? '-' }}</p>
+                                    <p class="mt-1">Rp {{ number_format($sale->promo_discount_amount + $sale->point_discount_amount, 0, ',', '.') }}</p>
+                                </td>
+                                <td class="px-4 py-3 align-top text-slate-600">{{ $sale->total_items }} item</td>
+                                <td class="px-4 py-3 align-top">
                                     <x-ui.badge :tone="$sale->payment_method->badgeTone()">{{ $sale->payment_method->label() }}</x-ui.badge>
-                                </div>
-                                <p class="mt-2 text-sm text-slate-500">
-                                    {{ $sale->cashier->name }} - {{ $sale->sold_at->format('d M Y, H:i') }}
-                                </p>
-                            </div>
-
-                            <div class="text-right">
-                                <p class="text-sm text-slate-500">{{ $sale->total_items }} item</p>
-                                <p class="text-lg font-extrabold text-slate-950">Rp {{ number_format($sale->grand_total, 0, ',', '.') }}</p>
-                                <p class="mt-1 text-sm text-slate-500">Dana masuk Rp {{ number_format($sale->paid_amount, 0, ',', '.') }}</p>
-                            </div>
-                        </div>
-                    </div>
-                @empty
-                    <div class="rounded-3xl border border-dashed border-slate-200 bg-slate-50 p-6 text-sm text-slate-500">
-                        Belum ada transaksi pada filter yang dipilih.
-                    </div>
-                @endforelse
+                                </td>
+                                <td class="px-4 py-3 align-top">
+                                    <p class="font-extrabold text-slate-950">Rp {{ number_format($sale->grand_total, 0, ',', '.') }}</p>
+                                    <p class="mt-1 text-slate-500">Masuk Rp {{ number_format($sale->paid_amount, 0, ',', '.') }}</p>
+                                </td>
+                            </tr>
+                        @empty
+                            <tr>
+                                <td colspan="7" class="px-4 py-8 text-center text-slate-500">
+                                    Belum ada transaksi pada filter yang dipilih.
+                                </td>
+                            </tr>
+                        @endforelse
+                    </tbody>
+                </table>
             </div>
 
             <div class="mt-5">

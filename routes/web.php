@@ -4,6 +4,8 @@ use App\Enums\UserRole;
 use App\Http\Controllers\Auth\AuthenticatedSessionController;
 use App\Http\Controllers\Cashier\CheckoutController;
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\MemberController;
+use App\Http\Controllers\PromotionController;
 use App\Http\Controllers\SaleController;
 use App\Http\Controllers\SalesReportController;
 use App\Http\Controllers\Stock\CategoryController;
@@ -46,6 +48,17 @@ Route::middleware('auth')->group(function (): void {
     Route::middleware('role:'.UserRole::Admin->value.','.UserRole::Cashier->value)->group(function (): void {
         Route::get('/kasir', [CheckoutController::class, 'index'])->name('cashier.index');
         Route::post('/kasir/checkout', [CheckoutController::class, 'store'])->name('cashier.checkout');
+        Route::get('/membership', [MemberController::class, 'index'])->name('members.index');
+        Route::post('/membership', [MemberController::class, 'store'])->name('members.store');
+        Route::patch('/membership/{member}', [MemberController::class, 'update'])->name('members.update');
+        Route::delete('/membership/{member}', [MemberController::class, 'destroy'])->name('members.destroy');
+        Route::get('/promo-poin', [PromotionController::class, 'index'])->name('promotions.index');
+        Route::post('/promo-poin/promo', [PromotionController::class, 'storePromotion'])->name('promotions.store');
+        Route::patch('/promo-poin/promo/{promotion}', [PromotionController::class, 'updatePromotion'])->name('promotions.update');
+        Route::delete('/promo-poin/promo/{promotion}', [PromotionController::class, 'destroyPromotion'])->name('promotions.destroy');
+        Route::post('/promo-poin/reward', [PromotionController::class, 'storeReward'])->name('point-rewards.store');
+        Route::patch('/promo-poin/reward/{pointReward}', [PromotionController::class, 'updateReward'])->name('point-rewards.update');
+        Route::delete('/promo-poin/reward/{pointReward}', [PromotionController::class, 'destroyReward'])->name('point-rewards.destroy');
         Route::get('/penjualan', [SaleController::class, 'index'])->name('sales.index');
         Route::get('/penjualan/{sale}/nota', [SaleController::class, 'receipt'])->name('sales.receipt');
         Route::get('/laporan/penjualan', [SalesReportController::class, 'index'])->name('reports.sales.index');

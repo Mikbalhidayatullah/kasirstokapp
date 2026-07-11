@@ -19,7 +19,7 @@ class SalesReportController extends Controller
         [$periodLabel, $rangeLabel] = $this->resolvePeriodMeta($startDate, $endDate, $period);
 
         $sales = $this->baseQuery($startDate, $endDate, $paymentMethod)
-            ->with(['cashier', 'items'])
+            ->with(['cashier', 'member', 'promotion', 'pointReward', 'items'])
             ->latest('sold_at')
             ->paginate(15)
             ->withQueryString();
@@ -65,7 +65,7 @@ class SalesReportController extends Controller
         [$periodLabel, $rangeLabel] = $this->resolvePeriodMeta($startDate, $endDate, $period);
 
         $sales = $this->baseQuery($startDate, $endDate, $paymentMethod)
-            ->with(['cashier', 'items'])
+            ->with(['cashier', 'member', 'promotion', 'pointReward', 'items'])
             ->latest('sold_at')
             ->get();
 
@@ -101,21 +101,28 @@ class SalesReportController extends Controller
 
             fputcsv($handle, []);
             fputcsv($handle, ['Detail Transaksi']);
-            fputcsv($handle, ['Invoice', 'Tanggal', 'Kasir', 'Metode', 'Total Item', 'Subtotal', 'Diskon', 'Pajak/Biaya', 'Grand Total', 'Dana Masuk', 'Kembalian']);
+            fputcsv($handle, ['Invoice', 'Tanggal', 'Kasir', 'Member', 'Promo', 'Reward Poin', 'Metode', 'Total Item', 'Subtotal', 'Diskon Manual', 'Diskon Promo', 'Diskon Poin', 'Pajak/Biaya', 'Grand Total', 'Dana Masuk', 'Kembalian', 'Poin Masuk', 'Poin Ditukar']);
 
             foreach ($sales as $sale) {
                 fputcsv($handle, [
                     $sale->invoice_number,
                     $sale->sold_at->format('Y-m-d H:i'),
                     $sale->cashier->name,
+                    $sale->member?->name ?? 'Umum',
+                    $sale->promotion?->name ?? '-',
+                    $sale->pointReward?->name ?? '-',
                     $sale->payment_method->label(),
                     $sale->total_items,
                     $sale->subtotal,
                     $sale->discount_amount,
+                    $sale->promo_discount_amount,
+                    $sale->point_discount_amount,
                     $sale->tax_amount,
                     $sale->grand_total,
                     $sale->paid_amount,
                     $sale->change_amount,
+                    $sale->points_earned,
+                    $sale->points_redeemed,
                 ]);
             }
 

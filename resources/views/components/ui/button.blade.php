@@ -5,7 +5,7 @@
 ])
 
 @php
-    $base = 'inline-flex items-center justify-center rounded-2xl font-semibold transition focus:outline-none focus:ring-4';
+    $base = 'inline-flex items-center justify-center rounded-lg font-semibold transition focus:outline-none focus:ring-4';
 
     $sizes = [
         'sm' => 'px-3 py-2 text-xs uppercase tracking-[0.18em]',

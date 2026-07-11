@@ -9,24 +9,24 @@ document.addEventListener('click', (event) => {
 });
 
 const mobileNavToggle = document.querySelector('[data-mobile-nav-toggle]');
-const mobileNav = document.querySelector('[data-mobile-nav]');
+const mobileNavPanel = document.querySelector('[data-mobile-nav-panel]');
 const mobileMediaQuery = window.matchMedia('(max-width: 639px)');
 
 const syncMobileNavigation = () => {
-    if (!mobileNav || !mobileNavToggle) {
+    if (!mobileNavPanel || !mobileNavToggle) {
         return;
     }
 
     if (mobileMediaQuery.matches) {
         const expanded = mobileNavToggle.getAttribute('aria-expanded') === 'true';
-        mobileNav.hidden = !expanded;
+        mobileNavPanel.hidden = !expanded;
     } else {
-        mobileNav.hidden = false;
+        mobileNavPanel.hidden = false;
         mobileNavToggle.setAttribute('aria-expanded', 'false');
     }
 };
 
-if (mobileNav && mobileNavToggle) {
+if (mobileNavPanel && mobileNavToggle) {
     mobileNavToggle.addEventListener('click', () => {
         const nextExpanded = mobileNavToggle.getAttribute('aria-expanded') !== 'true';
 

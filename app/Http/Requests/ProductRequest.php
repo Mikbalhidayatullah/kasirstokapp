@@ -25,6 +25,7 @@ class ProductRequest extends FormRequest
             'barcode' => ['nullable', 'string', 'max:100', Rule::unique('products', 'barcode')->ignore($productId)],
             'name' => ['required', 'string', 'max:120'],
             'description' => ['nullable', 'string', 'max:1000'],
+            'storage_location' => ['nullable', 'string', 'max:120'],
             'unit' => ['required', 'string', 'max:30'],
             'cost_price' => ['required', 'numeric', 'min:0'],
             'sale_price' => ['required', 'numeric', 'min:0'],

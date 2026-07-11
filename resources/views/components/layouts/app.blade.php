@@ -44,6 +44,16 @@
                 'active' => request()->routeIs('cashier.*'),
             ],
             [
+                'label' => 'Membership',
+                'href' => route('members.index'),
+                'active' => request()->routeIs('members.*'),
+            ],
+            [
+                'label' => 'Promo & Poin',
+                'href' => route('promotions.index'),
+                'active' => request()->routeIs('promotions.*') || request()->routeIs('point-rewards.*'),
+            ],
+            [
                 'label' => 'Riwayat Penjualan',
                 'href' => route('sales.index'),
                 'active' => request()->routeIs('sales.*'),
@@ -69,52 +79,48 @@
 </head>
 <body>
     <div class="mx-auto max-w-7xl px-4 py-5 sm:px-6 lg:px-8">
-        <div class="grid gap-5 sm:grid-cols-[280px_minmax(0,1fr)]">
-            <aside class="surface-card p-5 sm:sticky sm:top-5 sm:h-[calc(100vh-2.5rem)]">
-                <div class="flex h-full flex-col gap-5">
-                    <x-app-logo />
+        <div class="grid gap-5 sm:block">
+            <aside class="surface-card sticky top-0 z-40 -mx-4 max-h-screen overflow-hidden rounded-none border-x-0 p-4 sm:fixed sm:left-6 sm:top-5 sm:mx-0 sm:h-[calc(100vh-2.5rem)] sm:w-[280px] sm:max-h-[calc(100vh-2.5rem)] sm:rounded-lg sm:border-x sm:p-5 lg:left-8 2xl:left-[calc((100vw-80rem)/2+2rem)]">
+                <div class="flex h-full min-h-0 flex-col gap-5">
+                    <div class="flex items-center justify-between gap-4">
+                        <x-app-logo />
 
-                    <div class="surface-dark p-4">
-                        <p class="text-xs uppercase tracking-[0.28em] text-white/60">Akun aktif</p>
-                        <h2 class="mt-3 text-xl font-bold">{{ $user->name }}</h2>
-                        <p class="mt-1 text-sm text-white/70">{{ $user->role->label() }}</p>
+                        <button
+                            type="button"
+                            class="inline-flex h-11 w-11 items-center justify-center rounded-lg border border-slate-200 bg-white text-slate-900 shadow-sm sm:hidden"
+                            data-mobile-nav-toggle
+                            aria-expanded="false"
+                            aria-controls="mobile-sidebar-panel"
+                            aria-label="Buka menu navigasi"
+                        >
+                            <span class="grid gap-1.5">
+                                <span class="block h-0.5 w-5 rounded-full bg-current"></span>
+                                <span class="block h-0.5 w-5 rounded-full bg-current"></span>
+                                <span class="block h-0.5 w-5 rounded-full bg-current"></span>
+                            </span>
+                        </button>
                     </div>
 
-                    <button
-                        type="button"
-                        class="flex items-center justify-between rounded-3xl border border-amber-200 bg-amber-50/80 px-4 py-3 text-left sm:hidden"
-                        data-mobile-nav-toggle
-                        aria-expanded="false"
-                        aria-controls="sidebar-navigation"
-                    >
-                        <div>
-                            <p class="text-xs font-semibold uppercase tracking-[0.28em] text-amber-700">Menu Navigasi</p>
-                            <p class="mt-1 text-sm font-bold text-slate-950">{{ $activeNavigation['label'] ?? 'Pilih Menu' }}</p>
-                            <p class="mt-1 text-xs text-slate-600">Ketuk untuk menampilkan semua menu.</p>
+                    <div id="mobile-sidebar-panel" class="flex max-h-[calc(100vh-5.5rem)] min-h-0 flex-1 flex-col gap-5 overflow-y-auto pr-1 sm:max-h-none sm:overflow-hidden sm:pr-0" data-mobile-nav-panel>
+                        <div class="surface-dark p-4">
+                            <p class="text-xs uppercase tracking-[0.28em] text-white/60">Akun aktif</p>
+                            <h2 class="mt-3 text-xl font-bold">{{ $user->name }}</h2>
+                            <p class="mt-1 text-sm text-white/70">{{ $user->role->label() }}</p>
                         </div>
-                        <span class="rounded-2xl bg-amber-400 px-3 py-2 text-[11px] font-semibold uppercase tracking-[0.2em] text-slate-950">
-                            Menu
-                        </span>
-                    </button>
 
-                    <nav id="sidebar-navigation" class="grid gap-2" data-mobile-nav>
-                        @foreach ($navigationLinks as $link)
-                            <x-navigation-link :href="$link['href']" :active="$link['active']">
-                                {{ $link['label'] }}
-                            </x-navigation-link>
-                        @endforeach
-                    </nav>
+                        <nav id="sidebar-navigation" class="grid min-h-0 flex-1 gap-2 overflow-y-auto pr-1">
+                            @foreach ($navigationLinks as $link)
+                                <x-navigation-link :href="$link['href']" :active="$link['active']">
+                                    {{ $link['label'] }}
+                                </x-navigation-link>
+                            @endforeach
+                        </nav>
 
-                    <div class="mt-auto rounded-3xl border border-dashed border-slate-200 bg-slate-50 p-4">
-                        <p class="text-sm font-semibold text-slate-700">Fokus hari ini</p>
-                        <p class="mt-2 text-sm leading-6 text-slate-500">
-                            Pantau stok tipis, percepat checkout, dan jaga histori transaksi tetap rapi.
-                        </p>
                     </div>
                 </div>
             </aside>
 
-            <div class="space-y-5">
+            <div class="space-y-5 sm:ml-[300px]">
                 <header class="surface-card flex flex-col gap-4 p-5 sm:flex-row sm:items-start sm:justify-between">
                     <div>
                         <p class="text-xs font-semibold uppercase tracking-[0.28em] text-slate-500">Operasional Toko</p>

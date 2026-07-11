@@ -3,7 +3,7 @@
 <a
     href="{{ $href }}"
     {{ $attributes->class([
-        'flex items-center justify-between rounded-2xl px-4 py-3 text-sm font-semibold transition',
+        'flex items-center justify-between rounded-lg px-4 py-3 text-sm font-semibold transition',
         'bg-slate-950 text-white shadow-lg shadow-slate-900/20' => $active,
         'text-slate-600 hover:bg-slate-100 hover:text-slate-950' => ! $active,
     ]) }}

@@ -10,7 +10,7 @@ class SaleController extends Controller
     public function index(): View
     {
         $sales = Sale::query()
-            ->with(['cashier', 'items'])
+            ->with(['cashier', 'member', 'promotion', 'pointReward', 'items'])
             ->latest('sold_at')
             ->paginate(10);
 
@@ -19,7 +19,7 @@ class SaleController extends Controller
 
     public function receipt(Sale $sale): View
     {
-        $sale->load(['cashier', 'items']);
+        $sale->load(['cashier', 'member', 'promotion', 'pointReward', 'items']);
 
         return view('sales.receipt', compact('sale'));
     }
