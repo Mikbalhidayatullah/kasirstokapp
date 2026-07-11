@@ -66,6 +66,22 @@
         ];
     }
 
+    if ($user->canManageUsers()) {
+        $navigationLinks = [
+            ...$navigationLinks,
+            [
+                'label' => 'Manajemen User',
+                'href' => route('users.index'),
+                'active' => request()->routeIs('users.*'),
+            ],
+            [
+                'label' => 'Pengaturan',
+                'href' => route('settings.edit'),
+                'active' => request()->routeIs('settings.*'),
+            ],
+        ];
+    }
+
     $activeNavigation = collect($navigationLinks)->firstWhere('active', true);
 @endphp
 
@@ -74,10 +90,12 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>{{ $title }} | {{ config('app.name') }}</title>
+    <title>{{ $title }} | {{ $appSettings['app_name'] ?? config('app.name') }}</title>
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
-<body>
+<body
+    style="--theme-primary: {{ $appSettings['theme_primary'] ?? '#020617' }}; --theme-accent: {{ $appSettings['theme_accent'] ?? '#f59e0b' }}; --theme-background: {{ $appSettings['theme_background'] ?? '#f8fafc' }};"
+>
     <div class="mx-auto max-w-7xl px-4 py-5 sm:px-6 lg:px-8">
         <div class="grid gap-5 sm:block">
             <aside class="surface-card sticky top-0 z-40 -mx-4 max-h-screen overflow-hidden rounded-none border-x-0 p-4 sm:fixed sm:left-6 sm:top-5 sm:mx-0 sm:h-[calc(100vh-2.5rem)] sm:w-[280px] sm:max-h-[calc(100vh-2.5rem)] sm:rounded-lg sm:border-x sm:p-5 lg:left-8 2xl:left-[calc((100vw-80rem)/2+2rem)]">

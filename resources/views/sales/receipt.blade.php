@@ -3,7 +3,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Nota {{ $sale->invoice_number }} | {{ config('app.name') }}</title>
+    <title>Nota {{ $sale->invoice_number }} | {{ $appSettings['app_name'] ?? config('app.name') }}</title>
     @vite(['resources/css/app.css'])
     <style>
         @media print {
@@ -55,7 +55,7 @@
         <section class="receipt-paper mx-auto max-w-2xl rounded-[32px] border border-slate-200 bg-white p-6 shadow-[0_30px_80px_-48px_rgba(15,23,42,0.45)] sm:p-8">
             <div class="border-b border-dashed border-slate-200 pb-6 text-center">
                 <p class="text-xs font-semibold uppercase tracking-[0.32em] text-slate-500">Struk Belanja</p>
-                <h2 class="mt-3 text-3xl font-extrabold text-slate-950">{{ config('app.name') }}</h2>
+                <h2 class="mt-3 text-3xl font-extrabold text-slate-950">{{ $appSettings['app_name'] ?? config('app.name') }}</h2>
                 <p class="mt-2 text-sm text-slate-500">Terima kasih sudah berbelanja</p>
             </div>
 

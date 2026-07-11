@@ -8,6 +8,8 @@ use App\Http\Controllers\MemberController;
 use App\Http\Controllers\PromotionController;
 use App\Http\Controllers\SaleController;
 use App\Http\Controllers\SalesReportController;
+use App\Http\Controllers\SettingController;
+use App\Http\Controllers\UserManagementController;
 use App\Http\Controllers\Stock\CategoryController;
 use App\Http\Controllers\Stock\ProductController;
 use App\Http\Controllers\Stock\ProductLabelController;
@@ -28,6 +30,15 @@ Route::middleware('guest')->group(function (): void {
 Route::middleware('auth')->group(function (): void {
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
     Route::post('/logout', [AuthenticatedSessionController::class, 'destroy'])->name('logout');
+
+    Route::middleware('role:'.UserRole::Admin->value)->group(function (): void {
+        Route::get('/users', [UserManagementController::class, 'index'])->name('users.index');
+        Route::post('/users', [UserManagementController::class, 'store'])->name('users.store');
+        Route::patch('/users/{user}', [UserManagementController::class, 'update'])->name('users.update');
+        Route::delete('/users/{user}', [UserManagementController::class, 'destroy'])->name('users.destroy');
+        Route::get('/pengaturan', [SettingController::class, 'edit'])->name('settings.edit');
+        Route::patch('/pengaturan', [SettingController::class, 'update'])->name('settings.update');
+    });
 
     Route::middleware('role:'.UserRole::Admin->value.','.UserRole::Stock->value)->group(function (): void {
         Route::get('/stok/kategori', [CategoryController::class, 'index'])->name('stock.categories.index');

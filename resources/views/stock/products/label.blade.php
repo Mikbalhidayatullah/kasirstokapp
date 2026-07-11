@@ -3,7 +3,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Label Barcode {{ $product->name }} | {{ config('app.name') }}</title>
+    <title>Label Barcode {{ $product->name }} | {{ $appSettings['app_name'] ?? config('app.name') }}</title>
     @vite(['resources/css/app.css'])
     <style>
         .barcode-figure {

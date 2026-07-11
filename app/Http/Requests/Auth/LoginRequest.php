@@ -36,6 +36,15 @@ class LoginRequest extends FormRequest
             ]);
         }
 
+        if (! Auth::user()->is_active) {
+            Auth::logout();
+            RateLimiter::hit($this->throttleKey());
+
+            throw ValidationException::withMessages([
+                'email' => 'Akun ini sedang nonaktif. Hubungi admin toko.',
+            ]);
+        }
+
         RateLimiter::clear($this->throttleKey());
     }
 

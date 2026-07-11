@@ -5,14 +5,17 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>{{ $title }} | {{ config('app.name') }}</title>
+    <title>{{ $title }} | {{ $appSettings['app_name'] ?? config('app.name') }}</title>
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
-<body class="flex items-center justify-center px-4 py-10">
+<body
+    class="flex items-center justify-center px-4 py-10"
+    style="--theme-primary: {{ $appSettings['theme_primary'] ?? '#020617' }}; --theme-accent: {{ $appSettings['theme_accent'] ?? '#f59e0b' }}; --theme-background: {{ $appSettings['theme_background'] ?? '#f8fafc' }};"
+>
     <div class="grid w-full max-w-5xl gap-6 lg:grid-cols-[1.05fr_0.95fr]">
         <section class="surface-dark flex flex-col justify-between p-8 lg:p-10">
             <div>
-                <x-app-logo />
+                <x-app-logo variant="light" />
                 <p class="mt-8 max-w-md text-4xl font-extrabold leading-tight">
                     Satu dashboard untuk transaksi kasir dan kontrol stok yang tetap sinkron.
                 </p>

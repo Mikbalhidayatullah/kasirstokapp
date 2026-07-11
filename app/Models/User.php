@@ -22,6 +22,7 @@ class User extends Authenticatable
         'email',
         'password',
         'role',
+        'is_active',
     ];
 
     /**
@@ -43,6 +44,7 @@ class User extends Authenticatable
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
             'role' => UserRole::class,
+            'is_active' => 'boolean',
         ];
     }
 
@@ -64,5 +66,10 @@ class User extends Authenticatable
     public function canHandleCashier(): bool
     {
         return $this->role->canAccessCashier();
+    }
+
+    public function canManageUsers(): bool
+    {
+        return $this->role === UserRole::Admin;
     }
 }

@@ -18,8 +18,12 @@
         'ghost' => 'border border-slate-200 bg-white text-slate-700 hover:bg-slate-50 focus:ring-slate-100',
         'danger' => 'bg-rose-500 text-white hover:bg-rose-400 focus:ring-rose-100',
     ];
+
+    $style = $variant === 'secondary'
+        ? 'background-color: var(--theme-accent, #f59e0b);'
+        : ($variant === 'primary' ? 'background-color: var(--theme-primary, #020617);' : null);
 @endphp
 
-<button type="{{ $type }}" {{ $attributes->merge(['class' => "{$base} {$sizes[$size]} {$variants[$variant]}"]) }}>
+<button type="{{ $type }}" @if($style) style="{{ $style }}" @endif {{ $attributes->merge(['class' => "{$base} {$sizes[$size]} {$variants[$variant]}"]) }}>
     {{ $slot }}
 </button>
